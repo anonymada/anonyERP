@@ -1,0 +1,10 @@
+<ion-header>
+  <ion-toolbar *ngIf="isLoggedIn">
+    <ion-buttons>
+      <ion-menu-button autoHide="false"></ion-menu-button>
+    </ion-buttons>
+    <ion-button slot="end" fill="clear" color="dark" (click)="editProfile()">
+      <ion-icon name="person" slot="icon-only"></ion-icon>
+    </ion-button>
+  </ion-toolbar>
+</ion-header>

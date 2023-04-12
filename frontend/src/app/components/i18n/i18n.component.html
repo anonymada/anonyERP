@@ -1,0 +1,5 @@
+<ion-segment (ionChange)="switchLanguage($event)" value="lang === translate.currentLang">
+  <ion-segment-button *ngFor="let lang of translate.getLangs()" value="{{lang}}">
+    <span class="fi fi-{{lang}}"></span>
+  </ion-segment-button>
+</ion-segment>

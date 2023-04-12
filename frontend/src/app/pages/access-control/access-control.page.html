@@ -1,0 +1,80 @@
+<app-header></app-header>
+<ion-content class="ion-padding">
+
+  <div *ngIf="showScanner" class='anim-box center spacer'>
+    <div></div>
+    <div class='scanner'></div>
+    <zxing-scanner [torch]="torchEnabled" [device]="deviceCurrent" (deviceChange)="onDeviceChange($event)"
+      (scanSuccess)="onCodeResult($event)" (scanError)="scanErrorHandler($event)" [formats]="formatsEnabled"
+      [tryHarder]="tryHarder" (permissionResponse)="onHasPermission($event)" (camerasFound)="onCamerasFound($event)"
+      (torchCompatible)="onTorchCompatible($event)"></zxing-scanner>
+    <ion-note>{{qrResultString}}</ion-note>
+  </div><br>
+
+  <ion-card class='center spacer' *ngIf="qrResultString">
+    <ion-card-header>
+      <div style="display: flex; align-items: center;justify-content: center;">
+        <ion-avatar>
+          <img src='{{urlPhoto}}'>
+        </ion-avatar>
+      </div>
+      <ion-card-title>{{employee.firstname}}&nbsp;{{employee.lastname}}</ion-card-title>
+      <ion-card-subtitle>
+        <strong>IM : </strong> {{employee.jobServiceNumber}}<br>
+        <strong>CIN : </strong>{{employee.nationalIdentityNumber}}<br>
+      </ion-card-subtitle>
+    </ion-card-header>
+    <ion-card-content>
+      {{employee.jobTitle}}<br>
+      {{employee.jobDepartment}}<br>
+    </ion-card-content>
+  </ion-card><br>
+
+  <ion-card class='center spacer' *ngIf="qrResultString">
+    <ion-card-header>
+      <ion-card-title>{{dateOfLog}}</ion-card-title>
+    </ion-card-header>
+    <ion-list>
+      <ion-item>
+        <ion-badge slot="end">
+          <ion-spinner name="bubbles" *ngIf="sp1"></ion-spinner>
+          {{hourAmIn}}
+        </ion-badge>
+        <ion-label>Entrée AM</ion-label>
+      </ion-item>
+      <ion-item>
+        <ion-badge slot="end">
+          <ion-spinner name="bubbles" *ngIf="sp2"></ion-spinner>
+          {{hourAmOut}}
+        </ion-badge>
+        <ion-label>Sortie AM</ion-label>
+      </ion-item>
+      <ion-item>
+        <ion-badge slot="end">
+          <ion-spinner name="bubbles" *ngIf="sp3"></ion-spinner>
+          {{hourPmIn}}
+        </ion-badge>
+        <ion-label>Entrée PM</ion-label>
+      </ion-item>
+      <ion-item>
+        <ion-badge slot="end">
+          <ion-spinner name="bubbles" *ngIf="sp4"></ion-spinner>
+          {{hourPmOut}}
+        </ion-badge>
+
+        <ion-label>Sortie PM</ion-label>
+      </ion-item>
+    </ion-list>
+  </ion-card>
+
+  <ion-card class=" center spacer quadrat" *ngIf="qrResultNotMatch">
+    <strong>{{'GLOBAL.UNREGISTERED' | translate}}</strong>
+  </ion-card>
+
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button (click)="startScan()">
+      <ion-icon name="scan"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+
+</ion-content>

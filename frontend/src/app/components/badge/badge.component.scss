@@ -1,0 +1,89 @@
+ion-label {
+  font-size: 14px;
+}
+
+.img-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+
+.text-center {
+  display: flex;
+  justify-content: center;
+  white-space: nowrap;
+  word-wrap: break-word;
+}
+
+#print-section {
+  position: relative;
+  width: 350px;
+  height: 474px;
+}
+
+#wrapper {
+  position: relative;
+  margin: auto;
+  border: dimgray;
+  border-style: dotted;
+  width: 350px;
+  height: 237px;
+}
+
+#img-profile {
+  position: absolute;
+  width: 80px;
+  height: 80px;
+  top: 58px;
+  left: 38px;
+}
+
+#im {
+  position: absolute;
+  width: max-content;
+  top: 76px;
+  left: 160px;
+}
+
+#name {
+  position: absolute;
+  white-space: nowrap;
+  top: 92px;
+  left: 160px;
+  width: 180px;
+}
+
+#nationalIdentityNumber {
+  position: absolute;
+  top: 106px;
+  left: 160px;
+}
+
+#jobTitle {
+  position: absolute;
+  background-color: rgb(40, 185, 154);
+  color: white;
+  top: 157px;
+  left: 15px;
+  // width: 200px;
+}
+
+#jobDepartment {
+  position: absolute;
+  top: 176px;
+  left: 15px;
+  width: 200px;
+}
+
+#qr-recto {
+  position: absolute;
+  top: 125px;
+  left: 250px;
+}
+
+#qr-verso {
+  position: absolute;
+  top: 50px;
+  left: 220px;
+}

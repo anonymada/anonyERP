@@ -1,0 +1,8 @@
+
+ion-header, ion-toolbar{
+  --background: linear-gradient(to top, rgba(130, 131, 133, 0), rgba(137, 190, 214, 0.63));
+}
+ion-toolbar {
+  --background: url("/assets/image/banner.png") no-repeat scroll center top /cover ;
+  height: 50px;
+}

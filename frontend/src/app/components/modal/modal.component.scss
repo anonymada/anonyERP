@@ -1,0 +1,21 @@
+ion-avatar {
+  height: 150px;
+  width: 150px;
+}
+
+.wrapper {
+  position: relative;
+  margin: auto;
+  height: 175px;
+  width: 175px;
+}
+
+#avatar {
+  position: absolute;
+}
+
+#fab {
+  position: absolute;
+  top: 100px;
+  left: 100px;
+}

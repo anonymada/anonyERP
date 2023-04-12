@@ -1,0 +1,190 @@
+<form class="ion-form" [formGroup]="formGroup" (ngSubmit)="save()">
+  <ion-header class="ion-no-border" [translucent]="true">
+    <ion-toolbar>
+      <ion-button slot="start" type="button" fill="clear" (click)="close()">
+        <ion-icon
+          name="caret-back-outline"
+          slot="icon-only"
+          color="dark"
+        ></ion-icon>
+      </ion-button>
+      <ion-title class="ion-text-center">{{ title | translate }}</ion-title>
+      <ion-button
+        slot="end"
+        type="submit"
+        fill="clear"
+        [disabled]="!formGroup.valid"
+      >
+        <ion-icon slot="icon-only" name="save"></ion-icon>
+      </ion-button>
+    </ion-toolbar>
+  </ion-header>
+  <ion-content fullscreen="true">
+    <div *ngFor="let form_elem of form">
+      <div [ngSwitch]="form_elem.type">
+        <ion-list lines="none">
+          <ion-item class="ion-margin-bottom" *ngSwitchCase="'img'">
+            <div class="wrapper">
+              <ion-avatar id="avatar">
+                <ion-img
+                  src="{{ urlPhoto }}"
+                  style="
+                    background-color: rgb(255, 255, 255);
+                    width: 150px;
+                    height: 150px;
+                    border-radius: 50%;
+                    padding: auto;
+                  "
+                >
+                </ion-img>
+              </ion-avatar>
+              <div id="fab" *ngIf="form_elem.upload">
+                <ion-input
+                  type="text"
+                  formControlName="{{ form_elem.name }}"
+                  hidden
+                >
+                </ion-input>
+                <ion-fab>
+                  <ion-fab-button
+                    color="light"
+                    fill="clear"
+                    (click)="addPhoto()"
+                  >
+                    <ion-icon name="camera"></ion-icon>
+                  </ion-fab-button>
+                </ion-fab>
+              </div>
+            </div>
+          </ion-item>
+          <ion-item
+            fill="solid"
+            class="ion-margin-bottom"
+            *ngSwitchCase="'text'"
+          >
+            <ion-label position="floating"
+              >{{ form_elem.label | translate }}
+              <strong style="color: red" *ngIf="form_elem.required">*</strong>
+            </ion-label>
+            <ion-input
+              type="text"
+              formControlName="{{ form_elem.name }}"
+              (ionChange)="mask($event, form_elem.name, form_elem.mask)"
+            >
+            </ion-input>
+          </ion-item>
+          <ion-item
+            fill="solid"
+            class="ion-margin-bottom"
+            *ngSwitchCase="'number'"
+          >
+            <ion-label position="floating"
+              >{{ form_elem.label | translate }}
+              <strong style="color: red" *ngIf="form_elem.required">*</strong>
+            </ion-label>
+            <ion-input
+              type="number"
+              formControlName="{{ form_elem.name }}"
+              (ionChange)="mask($event, form_elem.name, form_elem.mask)"
+            >
+            </ion-input>
+          </ion-item>
+          <ion-item
+            fill="solid"
+            class="ion-margin-bottom"
+            *ngSwitchCase="'password'"
+          >
+            <ion-label position="floating"
+              >{{ form_elem.label | translate }}
+              <strong style="color: red" *ngIf="form_elem.required">*</strong>
+            </ion-label>
+            <app-show-hide-password>
+              <ion-input type="password" formControlName="{{ form_elem.name }}">
+              </ion-input>
+            </app-show-hide-password>
+          </ion-item>
+          <ion-item
+            fill="solid"
+            class="ion-margin-bottom"
+            *ngSwitchCase="'date'"
+          >
+            <ion-label position="floating"
+              >{{ form_elem.label | translate }}
+              <strong style="color: red" *ngIf="form_elem.required">*</strong>
+            </ion-label>
+            <ion-input type="date" formControlName="{{ form_elem.name }}">
+            </ion-input>
+          </ion-item>
+          <ion-item
+            fill="solid"
+            class="ion-margin-bottom"
+            *ngSwitchCase="'select'"
+          >
+            <ion-label position="floating"
+              >{{ form_elem.label | translate }}
+              <strong style="color: red" *ngIf="form_elem.required">*</strong>
+            </ion-label>
+            <ion-select
+              formControlName="{{ form_elem.name }}"
+              [multiple]="form_elem.multiple"
+            >
+              <ion-select-option
+                *ngFor="let opt of form_elem.options"
+                [value]="opt.value"
+              >
+                {{ opt.label | translate }}
+              </ion-select-option>
+            </ion-select>
+          </ion-item>
+          <ion-item
+            fill="solid"
+            class="ion-margin-bottom"
+            *ngSwitchCase="'checkbox'"
+          >
+            <ion-label>{{ form_elem.label | translate }}</ion-label>
+            <ion-list>
+              <ion-item lines="none" *ngFor="let opt of form_elem.options">
+                <ion-label>{{ opt.label }}</ion-label>
+                <ion-checkbox
+                  slot="start"
+                  formControlName="{{ form_elem.name }}"
+                ></ion-checkbox>
+              </ion-item>
+            </ion-list>
+          </ion-item>
+          <ion-note
+            *ngIf="
+              (formGroup.get(form_elem.name)?.dirty ||
+                formGroup.get(form_elem.name)?.touched) &&
+              formGroup.get(form_elem.name)?.errors
+            "
+            slot="error"
+          >
+            <span *ngIf="formGroup.get(form_elem.name).errors?.required">
+              {{ form_elem.label | translate }}
+              <strong> {{ "GLOBAL.REQUIRED" | translate }}</strong>
+            </span>
+            <span *ngIf="formGroup.get(form_elem.name).errors?.email">
+              {{ form_elem.label | translate }}
+              <strong> {{ "GLOBAL.NOTVALID" | translate }}</strong>
+            </span>
+            <span *ngIf="formGroup.get(form_elem.name).errors?.minlength">
+              {{ form_elem.label | translate }}
+              <strong>
+                {{ form_elem.minlength }}
+                {{ "GLOBAL.MINLENGTH" | translate }}</strong
+              >
+            </span>
+            <span *ngIf="formGroup.get(form_elem.name).errors?.maxlength">
+              {{ form_elem.label | translate }}
+              <strong>
+                {{ form_elem.maxlength }}
+                {{ "GLOBAL.MAXLENGTH" | translate }}</strong
+              >
+            </span>
+          </ion-note>
+        </ion-list>
+      </div>
+    </div>
+  </ion-content>
+</form>

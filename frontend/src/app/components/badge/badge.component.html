@@ -1,0 +1,46 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-button slot="start" fill="clear" (click)="close()">
+      <ion-icon name="caret-back-outline" slot="icon-only" color="dark"></ion-icon>
+    </ion-button>
+    <ion-title>{{'GLOBAL.PRINTCARD' | translate}}</ion-title>
+    <ion-button slot="end" fill="clear" (click)="print()">
+      <ion-icon slot="icon-only" name="print"></ion-icon>
+    </ion-button>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div id="print-section">
+    <div id="wrapper" cdkDrag>
+      <img class="img-background" src="assets/image/badge-recto.png">
+      <div cdkDrag><ion-avatar><img id="img-profile" src='{{urlPhoto}}'></ion-avatar></div>
+      <div id="im" cdkDrag>
+        <ion-label><strong>IM: </strong>{{data.jobServiceNumber}}</ion-label>
+      </div>
+      <div id="name" cdkDrag>
+        <ion-label><strong>{{data.lastname}}</strong> {{data.firstname}}</ion-label>
+      </div>
+      <div id="nationalIdentityNumber" cdkDrag>
+        <ion-label><strong>CIN: </strong>{{data.nationalIdentityNumber}}</ion-label>
+      </div>
+      <div id="jobTitle" cdkDrag>
+        <ion-label class="text-center">{{data.jobTitle}}</ion-label>
+      </div>
+      <div id="jobDepartment" class="text-center" cdkDrag>
+        <ion-label floating><strong>{{data.jobDepartment}}</strong></ion-label>
+      </div>
+      <div id="qr-recto" cdkDrag>
+        <qr-code [value]="data.id" [size]="75"></qr-code>
+      </div>
+    </div>
+    <div id="wrapper" cdkDrag>
+      <img class="img-background" src="assets/image/badge-verso.png">
+      <div id="qr-verso" cdkDrag>
+        <qr-code [value]="data.id" [size]="120"></qr-code>
+      </div>
+    </div>
+
+  </div>
+
+</ion-content>

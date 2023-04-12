@@ -1,0 +1,33 @@
+ion-content {
+  --padding-top: 10%;
+  --padding-start: 10%;
+  --padding-end: 10%;--background: radial-gradient(circle, #726bd1, #7277d7, #7383dc, #778fe0, #7c9ae3, #74a7ec, #6db3f3, #69bff8, #52cffe, #41dfff, #46eefa, #5ffbf1);
+}
+
+@media (max-width: 576px) {
+  ion-content {
+    --padding-top: 60%;
+  }
+}
+
+.main-grid {
+  padding-bottom: 2.5rem;
+}
+
+@media (min-width: 576px) {
+  .main-grid {
+    padding-top: 5rem;
+  }
+}
+
+.login-box {
+  padding: 25px;
+    background: rgba(255, 255, 255, 0.432);
+    border-radius: 10px;
+    box-shadow: 0 25px 45px rgba(0, 0, 0, 0.644);
+    border: 1px solid rgb(255, 255, 255, 0.5);
+    border-right: 1px solid rgb(255, 255, 255, 0.2);
+    border-bottom: 1px solid rgb(255, 255, 255, 0.2);
+}
+
+

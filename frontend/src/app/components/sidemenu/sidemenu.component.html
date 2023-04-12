@@ -1,0 +1,36 @@
+<ion-menu contentId="main-content">
+  <ion-header class="ion-no-border">
+    <ion-toolbar class="ion-text-center">
+      <ion-title size="large">
+        <ion-button expand="full" color="dark" fill="clear" (click)="logout()">
+          <ion-icon name="log-out-sharp" slot="icon-only"></ion-icon>{{'GLOBAL.LOGOUT'| translate}}
+        </ion-button>
+        <app-i18n></app-i18n>
+      </ion-title>
+    </ion-toolbar>
+    
+  </ion-header>
+  <ion-content>
+    <ion-list>
+      <ion-menu-toggle auto-hide="true">
+        <ion-item routerDirection="root" [routerLink]="['/admin']" lines="none" [class.selected]="0" detail="false"
+          *ngIf="user.isAdmin">
+          <ion-icon slot="start" name="lock-closed-sharp"></ion-icon>
+          <ion-label>{{ 'GLOBAL.MENU0' | translate }}</ion-label>
+        </ion-item>
+        <div *ngFor="let p of appPages; let i = index">
+          <ion-item (click)="selectedIndex = i" routerDirection="root" [routerLink]="[p.url]" lines="none"
+            detail="false" [class.selected]="selectedIndex === i">
+            <ion-icon slot="start" [ios]="p.icon + '-outline'" [md]="p.icon + '-sharp'"></ion-icon>
+            <ion-label>{{ p.title | translate }}</ion-label>
+          </ion-item>
+        </div>
+      </ion-menu-toggle>
+    </ion-list>
+  </ion-content>
+  <ion-footer collapse="fade">
+    <ion-toolbar class="ion-text-center">
+      <ion-note>&copy;</ion-note>
+    </ion-toolbar>
+  </ion-footer>
+</ion-menu>

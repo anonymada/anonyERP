@@ -1,0 +1,115 @@
+<ion-content>
+  <form (ngSubmit)="register()" [formGroup]="credentials">
+    <ion-grid class="main-grid">
+      <ion-row class="ion-text-center">
+        <ion-col
+          class="ion-text-center"
+          size-lg="4"
+          offset-lg="4"
+          class="login-box"
+        >
+          <div>
+            <ion-item fill="solid" class="ion-margin-bottom">
+              <ion-input
+                placeholder="{{'LOGIN.USERNAME' | translate}}"
+                formControlName="username"
+              ></ion-input>
+              <ion-note
+                *ngIf="(username.dirty || username.touched) && username.errors"
+                slot="error"
+              >
+                <span *ngIf="username.errors?.required">
+                  {{'LOGIN.USERNAME' | translate}}
+                  <strong> {{'GLOBAL.REQUIRED' | translate}}</strong>
+                </span>
+              </ion-note>
+            </ion-item>
+
+            <ion-item fill="solid" class="ion-margin-bottom">
+              <ion-input
+                placeholder="{{'REGISTER.EMAIL' | translate}}"
+                formControlName="email"
+              >
+              </ion-input>
+
+              <ion-note
+                *ngIf="(email.dirty || email.touched) && email.errors"
+                slot="error"
+              >
+                <span *ngIf="email.errors?.required"
+                  >{{'REGISTER.EMAIL' | translate}}
+                  <strong> {{'GLOBAL.REQUIRED' |translate}}</strong>
+                </span>
+                <span *ngIf="email.errors?.email"
+                  >{{'REGISTER.EMAIL' | translate}}
+                  <strong> {{'GLOBAL.NOTVALID' |translate}}</strong>
+                </span>
+              </ion-note>
+            </ion-item>
+
+            <ion-item fill="solid" class="ion-margin-bottom">
+              <app-show-hide-password>
+                <ion-input
+                  type="password"
+                  placeholder="{{'REGISTER.PASSWORD' | translate}}"
+                  formControlName="password"
+                >
+                </ion-input>
+              </app-show-hide-password>
+              <ion-note
+                *ngIf="(password.dirty || password.touched) && password.errors"
+                slot="error"
+              >
+                <span *ngIf="password.errors?.required"
+                  >{{'REGISTER.PASSWORD' | translate}}
+                  <strong> {{'GLOBAL.REQUIRED' | translate}}</strong>
+                </span>
+                <span *ngIf="password.errors?.minlength"
+                  >{{'REGISTER.PASSWORD' | translate}}
+                  <strong> {{'GLOBAL.LENGTH' | translate}}</strong>
+                </span>
+              </ion-note>
+            </ion-item>
+
+            <ion-item fill="solid" class="ion-margin-bottom">
+              <app-show-hide-password>
+                <ion-input
+                  type="password"
+                  placeholder="{{'REGISTER.CONFIRMPASSWORD' | translate}}"
+                  formControlName="confirmpassword"
+                >
+                </ion-input>
+              </app-show-hide-password>
+              <ion-note
+                *ngIf="(confirmpassword.dirty || confirmpassword.touched) && confirmpassword.errors"
+                slot="error"
+              >
+                <span *ngIf="confirmpassword.errors?.required"
+                  >{{'REGISTER.CONFIRMPASSWORD' | translate}}
+                  <strong> {{'GLOBAL.REQUIRED' | translate}}</strong>
+                </span>
+                <span *ngIf="confirmpassword.errors?.confirmedValidators">
+                  {{'REGISTER.CONFIRMPASSWORD'| translate}}
+                  <strong> {{'GLOBAL.NOTMATCHED' | translate}}</strong>
+                </span>
+              </ion-note>
+            </ion-item>
+          </div>
+
+          <ion-button
+            type=" submit"
+            expand="block"
+            [disabled]="!credentials.valid"
+            >{{'GLOBAL.REGISTER' | translate}} </ion-button
+          ><br />
+          <a routerLink="/login">{{'GLOBAL.LOGIN' | translate}}</a>
+        </ion-col>
+      </ion-row>
+      <ion-row class="ion-text-center">
+        <ion-col class="ion-text-center" size-lg="4" offset-lg="4">
+          <app-i18n></app-i18n>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </form>
+</ion-content>
