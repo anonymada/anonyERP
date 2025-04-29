@@ -4,9 +4,6 @@ const cors = require("cors");
 const bodyParser = require("body-parser");
 const morgan = require("morgan");
 const _ = require("lodash");
-const https = require("https");
-const fs = require("fs");
-const mime = require("mime-types");
 
 // config access to .env file
 require("dotenv").config();
@@ -36,9 +33,8 @@ app.use(morgan("dev"));
 app.post("/upload-file", async (req, res) => {
   try {
     if (!req.files) {
-      res.send({
-        status: false,
-        message: "No file uploaded",
+      res.status(404).send({
+        message: "GLOBAL.BADREQUEST",
       });
     } else {
       //Use the name of the input field (i.e. "file") to retrieve the uploaded file
@@ -46,17 +42,16 @@ app.post("/upload-file", async (req, res) => {
       let filename = req.body.filename;
 
       //Use the mv() method to place the file in the upload directory (i.e. "uploads")
-      file.mv("data/" + filename + ".png");
+      file.mv("data/" + filename);
 
       //send response
-      res.send({
-        status: true,
-        message: "File is uploaded",
+      res.status(200).send({
+        message: "GLOBAL.SAVED",
         data: {
           name: file.name,
           mimetype: file.mimetype,
           size: file.size,
-          url: process.env.UPLOAD_HOST + filename + ".png",
+          url: process.env.UPLOAD_HOST + filename,
         },
       });
     }
@@ -67,22 +62,14 @@ app.post("/upload-file", async (req, res) => {
 
 // route for server root
 app.get("/", (req, res) => {
-  res.json({ message: "fileuploader server" });
+  res.json({ message: "fileuploader server 1.0" });
 });
 
 //define server port
-const port = process.env.PORT || 30001;
+const port = process.env.PORT || 3001;
 
-// create https server
-https
-  .createServer(
-    {
-      key: fs.readFileSync("key.pem"),
-      cert: fs.readFileSync("cert.pem"),
-    },
-    app
-  )
-  .listen(port, (error) => {
-    if (error) throw err;
-    console.log(`%c  Server is running on port ${port}.`, "color: green");
-  });
+// start http server
+app.listen(port, (error) => {
+  if (error) throw err;
+  console.log(`%c  Server is running on port ${port}.`, "color: green");
+});

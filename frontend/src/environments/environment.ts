@@ -9,7 +9,7 @@ export const environment = {
 export const BACKEND_URL = 'http://localhost:8002/';
 // export const IMAGE_UPLOAD_API = 'https://api.imgbb.com/1/upload';   upload on imgbb
 export const UPLOAD_URL = 'https://localhost:8003/';
-export const DOWNLOAD_URL = 'http://192.168.1.254/webdav/';
+export const DOWNLOAD_URL = 'http://localhost/webdav/';
 
 /*
  * For easier debugging in development mode, you can import the following file

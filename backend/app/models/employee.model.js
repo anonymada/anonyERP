@@ -181,6 +181,10 @@ module.exports = (sequelize, Sequelize) => {
     jobAttribution: {
       type: Sequelize.STRING,
     },
+    isPresent: {
+      type: Sequelize.BOOLEAN,
+      defaultValue: false,
+    },
   });
 
   return Employee;

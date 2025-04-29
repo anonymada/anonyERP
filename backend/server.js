@@ -25,7 +25,7 @@ app.use(express.static(path.join(__dirname, "assets/uploads")));
 
 // database
 const db = require("./app/models");
-const Role = db.role;
+// const Role = db.role;
 
 // db.sequelize.sync({force: true}).then(()=> initial() ) will drop the table if it already exists
 db.sequelize
@@ -46,7 +46,7 @@ https
     app
   )
   .listen(PORT, (error) => {
-    if (error) throw err;
+    if (error) throw error;
     console.log(`%c  Server is running on port ${PORT}.`, "color: green");
   });
 
