@@ -3,73 +3,80 @@ const fileUpload = require("express-fileupload");
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const morgan = require("morgan");
-const _ = require("lodash");
-
-// config access to .env file
+const { createProxyMiddleware } = require("http-proxy-middleware");
 require("dotenv").config();
 
-// initialize express app
 const app = express();
 
-// setting cors options
-var corsOptions = {
+const corsOptions = {
   origin: "*",
 };
 
-// enable files upload
-app.use(
-  fileUpload({
-    createParentPath: true,
-  })
-);
-
-//add other middleware
+// Middleware de base
+app.use(fileUpload({ createParentPath: true }));
 app.use(cors(corsOptions));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(morgan("dev"));
 
-// route for upload single file
+// Route proxy vers WebDAV
+app.use(
+  "/image",
+  (req, res, next) => {
+    if (req.method !== "GET") {
+      return res.status(403).send("Hack not available");
+    }
+    next();
+  },
+  createProxyMiddleware({
+    target: process.env.WEBDAV_HOST || "http://localhost:8080",
+    changeOrigin: true,
+    headers: {
+      Authorization:
+        "Basic " +
+        Buffer.from(
+          `${process.env.WEBDAV_USER}:${process.env.WEBDAV_PASS}`
+        ).toString("base64"),
+    },
+  })
+);
+
+// Route pour upload
 app.post("/upload-file", async (req, res) => {
   try {
     if (!req.files) {
-      res.status(404).send({
-        message: "GLOBAL.BADREQUEST",
-      });
-    } else {
-      //Use the name of the input field (i.e. "file") to retrieve the uploaded file
-      let file = req.files.file;
-      let filename = req.body.filename;
-
-      //Use the mv() method to place the file in the upload directory (i.e. "uploads")
-      file.mv("data/" + filename);
-
-      //send response
-      res.status(200).send({
-        message: "GLOBAL.SAVED",
-        data: {
-          name: file.name,
-          mimetype: file.mimetype,
-          size: file.size,
-          url: process.env.UPLOAD_HOST + filename,
-        },
-      });
+      return res.status(400).send({ message: "GLOBAL.BADREQUEST" });
     }
+
+    const file = req.files.file;
+    const filename = req.body.filename;
+
+    // Enregistrer dans le dossier "data" (ou un volume monté vers WebDAV)
+    file.mv("data/" + filename);
+
+    return res.status(200).send({
+      message: "GLOBAL.SAVED",
+      data: {
+        name: file.name,
+        mimetype: file.mimetype,
+        size: file.size,
+        url: `http://${process.env.UPLOAD_HOST}:${process.env.PORT}/image/${filename}`,
+      },
+    });
   } catch (err) {
-    res.status(500).send(err);
+    console.error(err);
+    return res.status(500).send(err);
   }
 });
 
-// route for server root
+// Route racine
 app.get("/", (req, res) => {
-  res.json({ message: "fileuploader server 1.0" });
+  res.json({ message: "fileuploader server 2.0" });
 });
 
-//define server port
+// Lancement du serveur
 const port = process.env.PORT || 3001;
-
-// start http server
-app.listen(port, (error) => {
-  if (error) throw err;
-  console.log(`%c  Server is running on port ${port}.`, "color: green");
+app.listen(port, () => {
+  console.log(`Serveur en écoute sur le port ${port}`);
+  console.log(`Utilise le serveur webdav ${port}`);
 });

@@ -1,7 +1,8 @@
-FROM node:14-alpine
+FROM node:22-alpine
 WORKDIR /backend
+RUN npm install --global npm@10.9.4
 COPY package*.json ./
-RUN npm install
+RUN npm ci
 COPY . .
 EXPOSE 8002
-CMD npm start
+CMD ["npm", "start"]
