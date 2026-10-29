@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { catchError, retry, tap } from 'rxjs/operators';
+import { catchError, retry, mergeMap } from 'rxjs/operators';
 import { Observable, throwError } from 'rxjs';
 
 import { AuthResponse } from './auth-response';
@@ -35,14 +35,17 @@ export class AuthService {
   }
 
   login(user: any): Observable<AuthResponse> {
-    return this.httpClient.post(AUTH_API + 'signin', user).pipe(
-      tap(async (res: any) => {
+    return this.httpClient.post<AuthResponse>(AUTH_API + 'signin', user).pipe(
+      mergeMap(async (res: AuthResponse) => {
         if (res) {
-          this.storage.saveToken(res.accessToken);
-          this.storage.saveUsername(res.username);
-          this.storage.saveUserrole(res.roles);
-          this.storage.saveId(res.id);
+          await Promise.all([
+            this.storage.saveToken(res.accessToken),
+            this.storage.saveUsername(res.username),
+            this.storage.saveUserrole(res.roles),
+            this.storage.saveId(res.id),
+          ]);
         }
+        return res;
       }),
       catchError(this.handleError)
     );

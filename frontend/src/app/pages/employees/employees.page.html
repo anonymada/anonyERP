@@ -17,7 +17,7 @@
       >
         <ion-avatar>
           <div *ngIf="emps.photo !== ''; else noPhoto">
-            <img src="{{emps.photo}}" />
+            <img [src]="resolvePhotoUrl(emps.photo)" />
           </div>
           <ng-template #noPhoto>
             <img src="{{urlPhoto}}" />

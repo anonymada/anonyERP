@@ -12,7 +12,6 @@ import { UserService } from 'src/app/services/user/user-service';
 export class SidemenuComponent implements OnInit {
 
   public selectedIndex = 0;
-  public appPages = AppConstants.appPages;
   public isDesktop = false;
   public isLoggedIn = false;
 
@@ -20,6 +19,15 @@ export class SidemenuComponent implements OnInit {
   }
 
   ngOnInit() { }
+
+  get appPages() {
+    return AppConstants.appPages.filter((page) =>
+      page.roles.includes('*') ||
+      page.roles.includes('admin') && this.user.isAdmin ||
+      page.roles.includes('moderator') && this.user.isModerator ||
+      page.roles.includes('user') && this.user.isUser
+    );
+  }
 
   logout() {
     this.user.logout();

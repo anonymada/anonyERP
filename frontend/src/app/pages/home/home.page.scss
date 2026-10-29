@@ -1,0 +1,255 @@
+:host {
+  --dashboard-background: #f4f7fb;
+  --dashboard-text: #172033;
+  --dashboard-muted: #718096;
+}
+
+.dashboard {
+  min-height: 100%;
+  padding: 24px;
+  background: var(--dashboard-background);
+  color: var(--dashboard-text);
+}
+
+.dashboard-heading,
+.attendance-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.dashboard-heading {
+  margin-bottom: 20px;
+}
+
+h1, h2, p {
+  margin: 0;
+}
+
+h1 {
+  font-size: clamp(25px, 4vw, 34px);
+  font-weight: 750;
+}
+
+h2 {
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.eyebrow {
+  margin-bottom: 4px;
+  color: #667eea;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.dashboard-loader {
+  display: block;
+  margin: 20px auto;
+}
+
+.dashboard-error {
+  margin-bottom: 16px;
+  padding: 12px;
+  border-radius: 10px;
+  background: rgba(var(--ion-color-danger-rgb), 0.1);
+}
+
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(150px, 1fr));
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.summary-card,
+.attendance-card {
+  border: 1px solid rgba(100, 116, 139, 0.12);
+  border-radius: 16px;
+  background: white;
+  box-shadow: 0 8px 28px rgba(32, 45, 74, 0.07);
+}
+
+.summary-card {
+  min-height: 126px;
+  padding: 18px;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.summary-card span,
+.summary-card small {
+  display: block;
+  color: var(--dashboard-muted);
+}
+
+.summary-card span {
+  margin-bottom: 8px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.summary-card strong {
+  display: block;
+  font-size: 27px;
+  line-height: 1.05;
+}
+
+.summary-card small {
+  margin-top: 7px;
+  font-size: 11px;
+}
+
+.summary-icon {
+  flex: 0 0 42px;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  font-size: 22px;
+}
+
+.employee-icon { color: #5269db; background: #edf0ff; }
+.present-icon { color: #219653; background: #eaf8ef; }
+.absent-icon { color: #e8794a; background: #fff1eb; }
+.entry-icon { color: #8b5cf6; background: #f3efff; }
+.exit-icon { color: #d97706; background: #fff5df; }
+
+.attendance-card {
+  overflow: hidden;
+}
+
+.attendance-heading {
+  padding: 20px;
+  border-bottom: 1px solid #edf0f5;
+}
+
+.record-count {
+  color: var(--dashboard-muted);
+  font-size: 13px;
+}
+
+.attendance-header,
+.attendance-row {
+  display: grid;
+  grid-template-columns: minmax(240px, 2fr) repeat(4, minmax(100px, 0.7fr)) minmax(90px, 0.55fr);
+  align-items: center;
+  gap: 16px;
+}
+
+.attendance-header {
+  padding: 12px 20px;
+  color: #7b8798;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.attendance-row {
+  min-height: 78px;
+  padding: 12px 20px;
+  border-top: 1px solid #f0f2f6;
+}
+
+.employee-cell {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.employee-cell ion-avatar {
+  width: 48px;
+  height: 48px;
+  flex: 0 0 48px;
+}
+
+.employee-cell div {
+  min-width: 0;
+}
+
+.employee-cell strong,
+.employee-cell small {
+  overflow: hidden;
+  display: block;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.employee-cell strong {
+  font-size: 15px;
+}
+
+.employee-cell small {
+  margin-top: 4px;
+  color: var(--dashboard-muted);
+}
+
+.time-cell small {
+  display: block;
+  color: var(--dashboard-muted);
+  font-size: 11px;
+}
+
+.time-cell strong {
+  font-size: 15px;
+}
+
+.empty-state {
+  padding: 56px 20px;
+  text-align: center;
+  color: var(--dashboard-muted);
+}
+
+.empty-state ion-icon {
+  display: block;
+  margin: 0 auto 12px;
+  font-size: 36px;
+}
+
+.empty-state strong {
+  color: var(--dashboard-text);
+}
+
+.empty-state p {
+  margin-top: 5px;
+  font-size: 13px;
+}
+
+.attendance-table {
+  overflow-x: auto;
+}
+
+@media (max-width: 1100px) {
+  .summary-grid { grid-template-columns: repeat(3, 1fr); }
+}
+
+@media (max-width: 700px) {
+  .dashboard { padding: 14px; }
+
+  .dashboard-heading { align-items: flex-start; }
+  .dashboard-heading ion-chip { max-width: 135px; }
+
+  .summary-grid { grid-template-columns: repeat(2, 1fr); }
+  .summary-card { min-height: 118px; padding: 14px; }
+
+  .attendance-header { display: none; }
+  .attendance-row {
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    padding: 16px;
+  }
+  .employee-cell { grid-column: 1 / -1; }
+  .attendance-row > div:last-child { align-self: end; }
+}
+
+@media (max-width: 390px) {
+  .summary-grid { grid-template-columns: 1fr; }
+  .record-count { display: none; }
+}

@@ -1,7 +1,6 @@
 const db = require("../models");
 const User = db.user;
 const Role = db.role;
-const Op = db.Sequelize.Op; //~~operateur
 var bcrypt = require("bcryptjs");
 
 // list all user
@@ -49,37 +48,31 @@ exports.viewUser = (req, res) => {
 };
 
 // Update user roles only for admin
-exports.updateRoles = (req, res) => {
+exports.updateRoles = async (req, res) => {
   const id = req.params.id;
-  User.update(req.body, { where: { id: id } })
-    .then((num) => {
-      if (num == 1) {
-        if (req.body.roles) {
-          var roles = req.body.roles;
-          User.findByPk(id).then((user) => {
-            user
-              .setRoles(roles)
-              .then((user) => {
-                res.status(200).send({ message: "Data registerd" });
-              })
-              .catch((err) => {
-                res.status(400).send({
-                  message: "Data not registered \n " + err,
-                });
-              });
-          });
-        }
-      } else {
-        res.status(400).send({
-          message: "Data not registered \n Verify your request",
-        });
-      }
-    })
-    .catch((err) => {
-      res.status(500).send({
-        message: "Data not registered \n" + err,
-      });
+  const requestedRoles = Array.isArray(req.body.roles) ? req.body.roles : [];
+  if (!requestedRoles.length) {
+    return res.status(400).send({ message: "At least one role is required" });
+  }
+
+  try {
+    const roles = await Role.findAll({
+      where: {
+        name: requestedRoles.filter((name) => db.ROLES.includes(name)),
+      },
     });
+    if (roles.length !== requestedRoles.length) {
+      return res.status(400).send({ message: "One or more roles are invalid" });
+    }
+
+    const user = await User.findByPk(id);
+    if (!user) return res.status(404).send({ message: "User not found" });
+
+    await user.setRoles(roles);
+    return res.status(200).send({ message: "Data registered" });
+  } catch (err) {
+    return res.status(500).send({ message: "Data not registered \n" + err });
+  }
 };
 
 // Update by user

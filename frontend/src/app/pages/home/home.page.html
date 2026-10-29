@@ -1,6 +1,115 @@
 <app-header></app-header>
-<ion-content>
+<ion-content [fullscreen]="true">
   <ion-refresher slot="fixed" (ionRefresh)="refresh($event)">
     <ion-refresher-content></ion-refresher-content>
   </ion-refresher>
+
+  <main class="dashboard">
+    <section class="dashboard-heading">
+      <div>
+        <p class="eyebrow">{{ 'DASHBOARD.TITLE' | translate }}</p>
+        <h1>{{ 'DASHBOARD.PRESENCES_TODAY' | translate }}</h1>
+      </div>
+      <ion-chip color="medium">
+        <ion-icon name="calendar-outline"></ion-icon>
+        <ion-label>{{ today }}</ion-label>
+      </ion-chip>
+    </section>
+
+    <ion-spinner *ngIf="isLoading" class="dashboard-loader" name="crescent"></ion-spinner>
+
+    <ion-text *ngIf="dashboardError" color="danger">
+      <p class="dashboard-error">{{ dashboardError }}</p>
+    </ion-text>
+
+    <section class="summary-grid" [attr.aria-label]="'DASHBOARD.DAY_SUMMARY' | translate">
+      <article class="summary-card">
+        <div class="summary-icon employee-icon"><ion-icon name="people-outline"></ion-icon></div>
+        <div><span>{{ 'DASHBOARD.EMPLOYEES' | translate }}</span><strong>{{ employeeCount }}</strong><small>{{ 'DASHBOARD.REGISTERED' | translate }}</small></div>
+      </article>
+
+      <article class="summary-card">
+        <div class="summary-icon present-icon"><ion-icon name="time-outline"></ion-icon></div>
+        <div><span>{{ 'DASHBOARD.RECORDED' | translate }}</span><strong>{{ recordedCount }}</strong><small>{{ 'DASHBOARD.TODAY' | translate }}</small></div>
+      </article>
+
+      <article class="summary-card">
+        <div class="summary-icon absent-icon"><ion-icon name="person-remove-outline"></ion-icon></div>
+        <div><span>{{ 'DASHBOARD.WITHOUT_ATTENDANCE' | translate }}</span><strong>{{ absentCount }}</strong><small>{{ 'DASHBOARD.TODAY' | translate }}</small></div>
+      </article>
+
+      <article class="summary-card">
+        <div class="summary-icon entry-icon"><ion-icon name="log-in-outline"></ion-icon></div>
+        <div><span>{{ 'DASHBOARD.AVERAGE_ENTRY' | translate }}</span><strong>{{ averageEntry }}</strong><small>AM / PM</small></div>
+      </article>
+
+      <article class="summary-card">
+        <div class="summary-icon exit-icon"><ion-icon name="log-out-outline"></ion-icon></div>
+        <div><span>{{ 'DASHBOARD.AVERAGE_EXIT' | translate }}</span><strong>{{ averageExit }}</strong><small>AM / PM</small></div>
+      </article>
+    </section>
+
+    <section class="attendance-card">
+      <div class="attendance-heading">
+        <div>
+          <p class="eyebrow">{{ 'DASHBOARD.DAY_ACTIVITY' | translate }}</p>
+          <h2>{{ 'DASHBOARD.ATTENDANCE' | translate }}</h2>
+        </div>
+        <span class="record-count">{{ attendanceRows.length }} {{ 'DASHBOARD.RECORDS' | translate }}</span>
+      </div>
+
+      <div class="attendance-table" role="table" [attr.aria-label]="'DASHBOARD.DAILY_ATTENDANCE_LIST' | translate">
+        <div class="attendance-header" role="row">
+          <span>{{ 'DASHBOARD.EMPLOYEE' | translate }}</span>
+          <span>{{ 'DASHBOARD.AM_ENTRY' | translate }}</span>
+          <span>{{ 'DASHBOARD.AM_EXIT' | translate }}</span>
+          <span>{{ 'DASHBOARD.PM_ENTRY' | translate }}</span>
+          <span>{{ 'DASHBOARD.PM_EXIT' | translate }}</span>
+          <span>{{ 'DASHBOARD.STATUS' | translate }}</span>
+        </div>
+
+        <div class="attendance-row" role="row" *ngFor="let row of attendanceRows; trackBy: trackByEmployee">
+          <div class="employee-cell">
+            <ion-avatar>
+              <img
+                [src]="resolvePhotoUrl(row.employee.photo)"
+                [alt]="row.employee.firstname + ' ' + row.employee.lastname"
+              />
+            </ion-avatar>
+            <div>
+              <strong>{{ row.employee.firstname }} {{ row.employee.lastname }}</strong>
+              <small>{{ row.employee.jobTitle || row.employee.jobDepartment || ('DASHBOARD.EMPLOYEE' | translate) }}</small>
+            </div>
+          </div>
+          <div class="time-cell">
+            <small>{{ 'DASHBOARD.AM_ENTRY' | translate }}</small>
+            <strong>{{ row.amEntry || '--:--' }}</strong>
+          </div>
+          <div class="time-cell">
+            <small>{{ 'DASHBOARD.AM_EXIT' | translate }}</small>
+            <strong>{{ row.amExit || '--:--' }}</strong>
+          </div>
+          <div class="time-cell">
+            <small>{{ 'DASHBOARD.PM_ENTRY' | translate }}</small>
+            <strong>{{ row.pmEntry || '--:--' }}</strong>
+          </div>
+          <div class="time-cell">
+            <small>{{ 'DASHBOARD.PM_EXIT' | translate }}</small>
+            <strong>{{ row.pmExit || '--:--' }}</strong>
+          </div>
+          <div>
+            <ion-badge [color]="row.exit ? 'success' : 'warning'">
+              {{ (row.exit ? 'DASHBOARD.COMPLETED' : 'DASHBOARD.PRESENT') | translate }}
+            </ion-badge>
+          </div>
+        </div>
+
+        <div class="empty-state" *ngIf="!isLoading && attendanceRows.length === 0">
+          <ion-icon name="calendar-clear-outline"></ion-icon>
+          <strong>{{ 'DASHBOARD.NO_ATTENDANCE' | translate }}</strong>
+          <p>{{ 'DASHBOARD.NO_ATTENDANCE_HINT' | translate }}</p>
+        </div>
+      </div>
+    </section>
+  </main>
 </ion-content>

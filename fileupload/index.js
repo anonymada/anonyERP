@@ -3,7 +3,7 @@ const fileUpload = require("express-fileupload");
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const morgan = require("morgan");
-const { createProxyMiddleware } = require("http-proxy-middleware");
+const path = require("path");
 require("dotenv").config();
 
 const app = express();
@@ -19,27 +19,8 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(morgan("dev"));
 
-// Route proxy vers WebDAV
-app.use(
-  "/image",
-  (req, res, next) => {
-    if (req.method !== "GET") {
-      return res.status(403).send("Hack not available");
-    }
-    next();
-  },
-  createProxyMiddleware({
-    target: process.env.WEBDAV_HOST || "http://localhost:8080",
-    changeOrigin: true,
-    headers: {
-      Authorization:
-        "Basic " +
-        Buffer.from(
-          `${process.env.WEBDAV_USER}:${process.env.WEBDAV_PASS}`
-        ).toString("base64"),
-    },
-  })
-);
+// Serve files from the volume shared with WebDAV; express.static supports GET and HEAD.
+app.use("/image", express.static(path.join(__dirname, "data")));
 
 // Route pour upload
 app.post("/upload-file", async (req, res) => {
@@ -49,10 +30,13 @@ app.post("/upload-file", async (req, res) => {
     }
 
     const file = req.files.file;
-    const filename = req.body.filename;
+    const filename = path.basename(String(req.body.filename || file.name));
 
-    // Enregistrer dans le dossier "data" (ou un volume monté vers WebDAV)
-    file.mv("data/" + filename);
+    await file.mv(path.join(__dirname, "data", filename));
+    const publicUploadUrl = (
+      process.env.PUBLIC_UPLOAD_URL ||
+      `http://${process.env.UPLOAD_HOST}:${process.env.PORT}`
+    ).replace(/\/$/, "");
 
     return res.status(200).send({
       message: "GLOBAL.SAVED",
@@ -60,7 +44,7 @@ app.post("/upload-file", async (req, res) => {
         name: file.name,
         mimetype: file.mimetype,
         size: file.size,
-        url: `http://${process.env.UPLOAD_HOST}:${process.env.PORT}/image/${filename}`,
+        url: `${publicUploadUrl}/image/${encodeURIComponent(filename)}`,
       },
     });
   } catch (err) {

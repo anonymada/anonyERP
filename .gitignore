@@ -15,7 +15,6 @@
 /frontend/.dockerignore
 /frontend/.firebaserc
 /frontend/firebase.json
-/frontend/Dockerfile
 /frontend/server.js
 /frontend/zxing-scanner.component.d.ts
 /frontend/www

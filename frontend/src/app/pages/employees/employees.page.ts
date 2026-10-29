@@ -120,6 +120,10 @@ export class EmployeesPage implements OnInit {
 
   ngOnInit() {}
 
+  resolvePhotoUrl(photoUrl: string): string {
+    return AppConstants.resolveImageUrl(photoUrl);
+  }
+
   async listEmployee() {
     this.loader.showHideAutoLoader(1000);
     this.employeeService.listEmployee().subscribe(
@@ -220,6 +224,7 @@ export class EmployeesPage implements OnInit {
                 .addEmployee(modalData.data.formValue)
                 .subscribe(
                   async () => {
+                    this.loader.hideLoader();
                     this.listEmployee();
                   },
                   async (error) => {

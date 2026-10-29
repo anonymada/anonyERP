@@ -45,10 +45,11 @@ export class ModalComponent implements OnInit {
     }
 
     if (this.data.photo !== '' && this.data.photo) {
-      fetch(this.data.photo, { method: 'HEAD' })
+      const photoUrl = AppConstants.resolveImageUrl(this.data.photo);
+      fetch(photoUrl, { method: 'HEAD' })
         .then((res) => {
           if (res.ok) {
-            this.urlPhoto = this.data.photo;
+            this.urlPhoto = photoUrl;
           } else {
             this.urlPhoto = AppConstants.AVATAR;
           }

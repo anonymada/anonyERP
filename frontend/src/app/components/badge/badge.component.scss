@@ -1,89 +1,27 @@
-ion-label {
-  font-size: 14px;
-}
-
-.img-background {
-  position: absolute;
-  top: 0;
-  left: 0;
-}
-
-
-.text-center {
-  display: flex;
-  justify-content: center;
-  white-space: nowrap;
-  word-wrap: break-word;
-}
-
 #print-section {
-  position: relative;
-  width: 350px;
-  height: 474px;
-}
-
-#wrapper {
-  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   margin: auto;
-  border: dimgray;
-  border-style: dotted;
-  width: 350px;
-  height: 237px;
+  width: 320px;
+  height: 320px;
+  box-sizing: border-box;
+  overflow: visible;
+  background: white;
 }
 
-#img-profile {
-  position: absolute;
-  width: 80px;
-  height: 80px;
-  top: 58px;
-  left: 38px;
-}
-
-#im {
-  position: absolute;
-  width: max-content;
-  top: 76px;
-  left: 160px;
-}
-
-#name {
-  position: absolute;
-  white-space: nowrap;
-  top: 92px;
-  left: 160px;
-  width: 180px;
-}
-
-#nationalIdentityNumber {
-  position: absolute;
-  top: 106px;
-  left: 160px;
-}
-
-#jobTitle {
-  position: absolute;
-  background-color: rgb(40, 185, 154);
-  color: white;
-  top: 157px;
-  left: 15px;
-  // width: 200px;
-}
-
-#jobDepartment {
-  position: absolute;
-  top: 176px;
-  left: 15px;
+#qr-code {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 200px;
+  height: 200px;
+  flex: 0 0 200px;
+  overflow: visible;
 }
 
-#qr-recto {
-  position: absolute;
-  top: 125px;
-  left: 250px;
-}
-
-#qr-verso {
-  position: absolute;
-  top: 50px;
-  left: 220px;
+#qr-code qr-code {
+  display: block;
+  width: 200px;
+  height: 200px;
 }

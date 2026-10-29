@@ -1,9 +1,6 @@
 import { ModalController } from '@ionic/angular';
-import { Component, Input, OnInit } from '@angular/core';
-import * as htmlToImage from 'html-to-image';
+import { Component, Input } from '@angular/core';
 import { saveAs } from 'file-saver-es';
-import * as Base64_Blob from 'base64-blob';
-import { AppConstants } from 'src/app/config/app.constant';
 import { LoaderService } from 'src/app/services/loader/loader.service';
 
 // then use it by need
@@ -13,43 +10,56 @@ import { LoaderService } from 'src/app/services/loader/loader.service';
   templateUrl: './badge.component.html',
   styleUrls: ['./badge.component.scss'],
 })
-export class BadgeComponent implements OnInit {
+export class BadgeComponent {
   @Input() data: any;
-  urlPhoto: any = AppConstants.AVATAR;
 
   constructor(
     private modalCtr: ModalController,
     private loader: LoaderService
   ) {}
 
-  ngOnInit() {
-    if (this.data.photo !== '' && this.data.photo) {
-      this.urlPhoto = this.data.photo;
-    }
-  }
-
   async close() {
     await this.modalCtr.dismiss(null);
   }
 
-  print() {
+  async print() {
     this.loader.showLoader();
-    htmlToImage
-      .toPng(document.getElementById('print-section'), {
-        quality: 1,
-        skipAutoScale: true,
-        canvasWidth: 2100,
-        canvasHeight: 2844,
-      })
-      .then((imageBase64) => {
-        Base64_Blob.base64ToBlob(imageBase64).then((imageBlob) => {
-          saveAs(imageBlob, this.data.jobServiceNumber + '.png');
-          this.loader.hideLoader();
-        });
-      })
-      .catch((error) => {
-        this.loader.hideLoader();
-        console.error('Impression impossible', error);
+    try {
+      const qrImage = document.querySelector<HTMLImageElement>('#qr-code img');
+      if (!qrImage) {
+        throw new Error('Image du QR code introuvable');
+      }
+
+      await qrImage.decode();
+
+      const canvas = document.createElement('canvas');
+      canvas.width = 320;
+      canvas.height = 320;
+
+      const context = canvas.getContext('2d');
+      if (!context) {
+        throw new Error('Impossible de créer le canvas PNG');
+      }
+
+      context.fillStyle = '#ffffff';
+      context.fillRect(0, 0, canvas.width, canvas.height);
+      context.drawImage(qrImage, 60, 60, 200, 200);
+
+      const imageBlob = await new Promise<Blob>((resolve, reject) => {
+        canvas.toBlob((blob) => {
+          if (blob) {
+            resolve(blob);
+          } else {
+            reject(new Error('Impossible de générer le PNG'));
+          }
+        }, 'image/png');
       });
+
+      saveAs(imageBlob, this.data.jobServiceNumber + '.png');
+    } catch (error) {
+      console.error('Impression impossible', error);
+    } finally {
+      this.loader.hideLoader();
+    }
   }
 }

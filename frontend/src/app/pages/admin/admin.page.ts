@@ -50,9 +50,9 @@ export class AdminPage implements OnInit {
       label: 'LOGIN.ROLES',
       name: 'roles',
       options: [
-        { value: 3, label: 'GLOBAL.ADMIN' },
+        { value: 1, label: 'GLOBAL.ADMIN' },
         { value: 2, label: 'GLOBAL.MODER' },
-        { value: 1, label: 'GLOBAL.USER' },
+        { value: 3, label: 'GLOBAL.USER' },
       ],
       required: true,
       validators: [],

@@ -83,7 +83,7 @@ export class AccessControlPage implements OnInit {
         this.qrResultNotMatch = false;
         if (emp) {
           this.employee = emp;
-          this.urlPhoto = emp.photo;
+          this.urlPhoto = AppConstants.resolveImageUrl(emp.photo);
           const firstLoggedData = {
             employeeId: emp.id,
             dateOfLog: this.dateOfLog,

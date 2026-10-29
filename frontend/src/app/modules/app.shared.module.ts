@@ -7,7 +7,7 @@ import { IonicModule } from '@ionic/angular';
 import { NgModule } from '@angular/core';
 import { QRCodeModule } from 'angular2-qrcode';
 import { BarcodeScanner } from '@ionic-native/barcode-scanner/ngx';
-import { NgxMaskModule, IConfig ,MaskPipe} from 'ngx-mask';
+import { NgxMaskModule, IConfig, MaskPipe } from 'ngx-mask';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { HeaderComponent } from '../components/header/header.component';
 import { SidemenuComponent } from '../components/sidemenu/sidemenu.component';

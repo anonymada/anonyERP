@@ -13,11 +13,6 @@
   <ion-content>
     <ion-list>
       <ion-menu-toggle auto-hide="true">
-        <ion-item routerDirection="root" [routerLink]="['/admin']" lines="none" [class.selected]="0" detail="false"
-          *ngIf="user.isAdmin">
-          <ion-icon slot="start" name="lock-closed-sharp"></ion-icon>
-          <ion-label>{{ 'GLOBAL.MENU0' | translate }}</ion-label>
-        </ion-item>
         <div *ngFor="let p of appPages; let i = index">
           <ion-item (click)="selectedIndex = i" routerDirection="root" [routerLink]="[p.url]" lines="none"
             detail="false" [class.selected]="selectedIndex === i">

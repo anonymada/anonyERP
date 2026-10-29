@@ -13,54 +13,67 @@ const ISMODERATOR_KEY = 'isModerator';
 
 export class StorageService {
 
+  private readonly storageReady: Promise<void>;
+
   constructor(public storage: Storage,) {
-    this.storage.create();
+    this.storageReady = this.storage.create().then(() => undefined);
   }
 
   async saveToken(token: string): Promise<void> {
+    await this.storageReady;
     await this.storage.set(TOKEN_KEY, token);
   }
 
-  getToken(): Promise<any> {
+  async getToken(): Promise<any> {
+    await this.storageReady;
     return this.storage.get(TOKEN_KEY);
   }
 
-  clearToken(): void {
-    this.storage.clear();
+  async clearToken(): Promise<void> {
+    await this.storageReady;
+    await this.storage.clear();
   }
 
   async saveUsername(username: any): Promise<void> {
+    await this.storageReady;
     await this.storage.set(USERNAME_KEY, username);
   }
 
-  getUsername(): Promise<string> {
+  async getUsername(): Promise<string> {
+    await this.storageReady;
     return this.storage.get(USERNAME_KEY);
   }
 
-  async saveUserrole(roles: string[]): Promise<any> {
-    roles.forEach((role) => {
+  async saveUserrole(roles: string[]): Promise<void> {
+    await this.storageReady;
+    await Promise.all(roles.map((role) => {
       if (role === 'ROLE_ADMIN') {
-        this.storage.set(ISADMIN_KEY, true);
-      };
+        return this.storage.set(ISADMIN_KEY, true);
+      }
       if (role === 'ROLE_MODERATOR') {
-        this.storage.set(ISMODERATOR_KEY, true);
-      };
-    });
+        return this.storage.set(ISMODERATOR_KEY, true);
+      }
+      return Promise.resolve();
+    }));
   }
 
-  getRoleAdmin(): Promise<boolean> {
+  async getRoleAdmin(): Promise<boolean> {
+    await this.storageReady;
     return this.storage.get(ISADMIN_KEY);
   }
 
-  getRoleModerator(): Promise<boolean> {
+  async getRoleModerator(): Promise<boolean> {
+    await this.storageReady;
     return this.storage.get(ISMODERATOR_KEY);
   }
 
   async saveId(id: any): Promise<void> {
+    await this.storageReady;
     await this.storage.set(USERID_KEY, id);
   }
 
-  getUserId(): Promise<any> {
+  async getUserId(): Promise<any> {
+    await this.storageReady;
     return this.storage.get(USERID_KEY);
   }
 

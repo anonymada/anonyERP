@@ -2,34 +2,29 @@ const controller = require("../controllers/employee.controller.js");
 const { authJwt, verifyEmployee } = require("../middleware");
 
 module.exports = function (app) {
-  // Retrieve all employee
-  app.get("/api/employee", [authJwt.verifyToken], controller.listEmployee);
+  app.get("/api/employee", [authJwt.verifyToken, authJwt.isAuthenticatedUser], controller.listEmployee);
 
-  // Retrieve specified employee
   app.get(
     "/api/employee/details/:id",
-    [authJwt.verifyToken],
+    [authJwt.verifyToken, authJwt.isAuthenticatedUser],
     controller.viewEmployee
   );
 
-  // Delete specified employee
   app.delete(
     "/api/employee/delete/:id",
-    [authJwt.verifyToken],
+    [authJwt.verifyToken, authJwt.isModeratorOrAdmin],
     controller.deleteEmployee
   );
 
-  // Update specified employee
   app.put(
     "/api/employee/update/:id",
-    [authJwt.verifyToken],
+    [authJwt.verifyToken, authJwt.isModeratorOrAdmin],
     controller.updateEmployee
   );
 
-  // Create employee
   app.post(
     "/api/employee/add",
-    [authJwt.verifyToken, verifyEmployee.checkDuplicateEmployee],
+    [authJwt.verifyToken, authJwt.isModeratorOrAdmin, verifyEmployee.checkDuplicateEmployee],
     controller.createEmployee
   );
 };

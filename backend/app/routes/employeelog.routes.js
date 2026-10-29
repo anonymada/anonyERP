@@ -3,7 +3,11 @@ const { authJwt } = require("../middleware");
 
 module.exports = function (app) {
   // Retrieve all employeelog
-  app.get("/api/employeelog", [authJwt.verifyToken], controller.listLog);
+  app.get(
+    "/api/employeelog",
+    [authJwt.verifyToken, authJwt.isAuthenticatedUser],
+    controller.listLog
+  );
 
   // Create employeelog
   app.post(
@@ -20,7 +24,11 @@ module.exports = function (app) {
   );
 
   // retrieve one employeelog
-  app.post("/api/employeelog/view", controller.viewLog);
+  app.post(
+    "/api/employeelog/view",
+    [authJwt.verifyToken, authJwt.isAuthenticatedUser],
+    controller.viewLog
+  );
 
   // delete all log
   app.delete(

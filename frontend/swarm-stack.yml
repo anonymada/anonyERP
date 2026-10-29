@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  frontend:
+    image: 192.168.2.254:5000/frontend:1.1.0
+    environment:
+      BACKEND_URL: 'https://192.168.2.254:8002/'
+      UPLOAD_URL: 'http://192.168.2.254:8003/'
+      DOWNLOAD_URL: 'http://192.168.2.254:8080/'
+    ports:
+      - target: 443
+        published: 8001
+        protocol: tcp
+        mode: ingress
+    secrets:
+      - source: frontend_tls_cert
+        target: /etc/nginx/certs/cert.pem
+      - source: frontend_tls_key
+        target: /etc/nginx/certs/key.pem
+    deploy:
+      replicas: 2
+      update_config:
+        order: start-first
+        failure_action: rollback
+      restart_policy:
+        condition: on-failure
+
+secrets:
+  frontend_tls_cert:
+    external: true
+  frontend_tls_key:
+    external: true

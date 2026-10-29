@@ -7,7 +7,7 @@
     "ng": "ng",
     "start": "ng serve",
     "update": "ng update --all",
-    "build": "ionic build --prod --ssl",
+    "build": "ng build --prod --ssl",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e"
@@ -32,6 +32,7 @@
     "@capacitor/splash-screen": "^6.0.0",
     "@capacitor/status-bar": "^6.0.0",
     "@ionic-native/barcode-scanner": "^5.36.0",
+    "@ionic-native/core": "5.36.0",
     "@ionic/angular": "^6.1.9",
     "@ionic/pwa-elements": "^3.1.1",
     "@ionic/storage-angular": "^3.0.6",
