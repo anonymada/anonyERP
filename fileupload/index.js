@@ -1,4 +1,6 @@
 const express = require("express");
+const https = require("https");
+const fs = require("fs");
 const fileUpload = require("express-fileupload");
 const cors = require("cors");
 const bodyParser = require("body-parser");
@@ -35,7 +37,7 @@ app.post("/upload-file", async (req, res) => {
     await file.mv(path.join(__dirname, "data", filename));
     const publicUploadUrl = (
       process.env.PUBLIC_UPLOAD_URL ||
-      `http://${process.env.UPLOAD_HOST}:${process.env.PORT}`
+      "https://192.168.2.254:8001"
     ).replace(/\/$/, "");
 
     return res.status(200).send({
@@ -60,7 +62,40 @@ app.get("/", (req, res) => {
 
 // Lancement du serveur
 const port = process.env.PORT || 3001;
-app.listen(port, () => {
-  console.log(`Serveur en écoute sur le port ${port}`);
-  console.log(`Utilise le serveur webdav ${port}`);
-});
+const tlsCertCandidates = [
+  process.env.TLS_CERT_FILE,
+  "/run/secrets/frontend_tls_cert",
+  path.join(__dirname, "cert.pem"),
+  path.join(__dirname, "..", "backend", "cert.pem"),
+].filter(Boolean);
+const tlsKeyCandidates = [
+  process.env.TLS_KEY_FILE,
+  "/run/secrets/frontend_tls_key",
+  path.join(__dirname, "key.pem"),
+  path.join(__dirname, "..", "backend", "key.pem"),
+].filter(Boolean);
+const tlsCertPath = tlsCertCandidates.find((candidate) => fs.existsSync(candidate));
+const tlsKeyPath = tlsKeyCandidates.find((candidate) => fs.existsSync(candidate));
+
+if (!tlsCertPath || !tlsKeyPath) {
+  console.error("Certificat ou clé TLS introuvable pour le serveur de fichiers");
+  process.exit(1);
+}
+
+try {
+  https
+    .createServer(
+      {
+        cert: fs.readFileSync(tlsCertPath),
+        key: fs.readFileSync(tlsKeyPath),
+      },
+      app
+    )
+    .listen(port, () => {
+      console.log(`Serveur HTTPS en écoute sur le port ${port}`);
+      console.log(`Utilise le serveur webdav ${port}`);
+    });
+} catch (error) {
+  console.error("Impossible de charger le certificat TLS du serveur de fichiers:", error);
+  process.exit(1);
+}

@@ -6,7 +6,7 @@ export const environment = {
   production: false,
 };
 
-export { BACKEND_URL, UPLOAD_URL, DOWNLOAD_URL } from './runtime-config';
+export { BACKEND_URL, UPLOAD_URL, DOWNLOAD_URL, WEBDAV_URL } from './runtime-config';
 
 /*
  * For easier debugging in development mode, you can import the following file

@@ -3,22 +3,81 @@
   <ion-refresher slot="fixed" (ionRefresh)="refresh($event)">
     <ion-refresher-content></ion-refresher-content>
   </ion-refresher>
-  <ion-searchbar placeholder="{{'GLOBAL.FILTER' | translate}}" [(ngModel)]="filterTerm" animated="true">
-  </ion-searchbar>
-  <ion-list *ngFor="let elem of users | filter:filterTerm ; let i=index">
-    <ion-item-sliding>
-      <ion-item lines="none" (click)="edit(i)" [class.selected]="selectedIndex === i">
-        <ion-label><strong>{{elem.username}}</strong><br>
-          <ion-note>{{elem.email}}</ion-note>
-          <ion-note></ion-note>
-        </ion-label>
-      </ion-item>
-      <ion-item-options side="end">
-        <ion-item-option color="light" (click)="delete(i)">
-          <ion-icon name="trash" slot="icon-only"></ion-icon>
-        </ion-item-option>&nbsp;
-      </ion-item-options>
-    </ion-item-sliding>
-  </ion-list>
 
+  <ion-segment [(ngModel)]="activeTab" mode="md" class="admin-tabs">
+    <ion-segment-button value="users">
+      <ion-icon name="people-outline"></ion-icon>
+      <ion-label>{{ 'ADMIN.USERS_TAB' | translate }}</ion-label>
+    </ion-segment-button>
+    <ion-segment-button value="attendance">
+      <ion-icon name="time-outline"></ion-icon>
+      <ion-label>{{ 'ADMIN.ATTENDANCE_TAB' | translate }}</ion-label>
+    </ion-segment-button>
+  </ion-segment>
+
+  <div *ngIf="activeTab === 'users'">
+    <ion-searchbar placeholder="{{'GLOBAL.FILTER' | translate}}" [(ngModel)]="filterTerm" animated="true"></ion-searchbar>
+    <ion-list *ngFor="let elem of users | filter:filterTerm; let i=index">
+      <ion-item-sliding>
+        <ion-item lines="none" (click)="edit(elem)" [class.selected]="selectedIndex === i">
+          <ion-label><strong>{{elem.username}}</strong><br><ion-note>{{elem.email}}</ion-note></ion-label>
+        </ion-item>
+        <ion-item-options side="end">
+          <ion-item-option color="light" (click)="delete(elem)">
+            <ion-icon name="trash" slot="icon-only"></ion-icon>
+          </ion-item-option>
+        </ion-item-options>
+      </ion-item-sliding>
+    </ion-list>
+  </div>
+
+  <div *ngIf="activeTab === 'attendance'" class="attendance-admin">
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>{{ 'ADMIN.ATTENDANCE_EDIT' | translate }}</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-list>
+          <ion-item>
+            <ion-label position="stacked">{{ 'DASHBOARD.EMPLOYEE' | translate }}</ion-label>
+            <ion-select interface="alert" [(ngModel)]="selectedEmployeeId" (ionChange)="loadAttendanceLog()">
+              <ion-select-option *ngFor="let employee of employees" [value]="employee.id.toString()">
+                {{ employee.firstname }} {{ employee.lastname }}
+              </ion-select-option>
+            </ion-select>
+          </ion-item>
+          <ion-item>
+            <ion-label position="stacked">{{ 'ADMIN.DATE' | translate }}</ion-label>
+            <ion-input type="date" [(ngModel)]="attendanceDate" (ionChange)="loadAttendanceLog()"></ion-input>
+          </ion-item>
+        </ion-list>
+
+        <ion-spinner *ngIf="attendanceLoading"></ion-spinner>
+
+        <ion-list *ngIf="selectedEmployeeId && attendanceDate" class="attendance-hours">
+          <ion-item>
+            <ion-label position="stacked">{{ 'DASHBOARD.AM_ENTRY' | translate }}</ion-label>
+            <ion-input type="time" [(ngModel)]="hourAmIn"></ion-input>
+          </ion-item>
+          <ion-item>
+            <ion-label position="stacked">{{ 'DASHBOARD.AM_EXIT' | translate }}</ion-label>
+            <ion-input type="time" [(ngModel)]="hourAmOut"></ion-input>
+          </ion-item>
+          <ion-item>
+            <ion-label position="stacked">{{ 'DASHBOARD.PM_ENTRY' | translate }}</ion-label>
+            <ion-input type="time" [(ngModel)]="hourPmIn"></ion-input>
+          </ion-item>
+          <ion-item>
+            <ion-label position="stacked">{{ 'DASHBOARD.PM_EXIT' | translate }}</ion-label>
+            <ion-input type="time" [(ngModel)]="hourPmOut"></ion-input>
+          </ion-item>
+        </ion-list>
+
+        <ion-button expand="block" *ngIf="selectedEmployeeId && attendanceDate" (click)="saveAttendanceLog()">
+          <ion-icon name="save-outline" slot="start"></ion-icon>
+          {{ 'GLOBAL.SAVE' | translate }}
+        </ion-button>
+      </ion-card-content>
+    </ion-card>
+  </div>
 </ion-content>

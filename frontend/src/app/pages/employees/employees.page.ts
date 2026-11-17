@@ -136,7 +136,10 @@ export class EmployeesPage implements OnInit {
     );
   }
 
-  async editEmployee(index: number) {
+  async editEmployee(employee: Employee) {
+    if (!employee) { return; }
+    const index = this.employees.findIndex((item) => String(item.id) === String(employee.id));
+    if (index === -1) { return; }
     this.loader.showHideAutoLoader(500);
     const modal = await this.modalCtrl.create({
       component: ModalComponent,
@@ -257,42 +260,10 @@ export class EmployeesPage implements OnInit {
     return await modal.present();
   }
 
-  async delEmployee(index: number) {
-    const alert = await this.alertController.create({
-      header: this.translate.instant('GLOBAL.CONFIRM'),
-      message:
-        this.translate.instant('GLOBAL.DELETECONFIRM') +
-        '<br/>' +
-        this.employees[index].firstname +
-        ' ' +
-        this.employees[index].lastname,
-      buttons: [
-        {
-          text: 'Non',
-          handler: () => {},
-        },
-        {
-          text: 'Oui',
-          handler: () => {
-            this.employeeService
-              .deleteEmployee(this.employees[index].id)
-              .subscribe(
-                async (data) => {
-                  this.listEmployee();
-                },
-                async (error) => {
-                  this.alert.showErrorAlert(error);
-                }
-              );
-            this.listEmployee();
-          },
-        },
-      ],
-    });
-    await alert.present();
-  }
-
-  async createBadge(index: number) {
+  async delEmployee(employee: Employee) {
+    if (!employee) { return; }
+    const index = this.employees.findIndex((item) => String(item.id) === String(employee.id));
+    if (index === -1) { return; }
     this.loader.showHideAutoLoader(500);
     const modal = await this.modalCtrl.create({
       component: BadgeComponent,
@@ -300,6 +271,21 @@ export class EmployeesPage implements OnInit {
       componentProps: {
         data: this.employees[index],
       },
+    });
+    modal.onDidDismiss().then((modalData) => {
+      if (modalData.data !== null) {
+      }
+    });
+    return await modal.present();
+  }
+
+  async createBadge(employee: Employee) {
+    if (!employee) { return; }
+    this.loader.showHideAutoLoader(500);
+    const modal = await this.modalCtrl.create({
+      component: BadgeComponent,
+      backdropDismiss: false,
+      componentProps: { data: employee },
     });
     modal.onDidDismiss().then((modalData) => {
       if (modalData.data !== null) {

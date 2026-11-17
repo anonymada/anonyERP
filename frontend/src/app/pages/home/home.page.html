@@ -8,108 +8,251 @@
     <section class="dashboard-heading">
       <div>
         <p class="eyebrow">{{ 'DASHBOARD.TITLE' | translate }}</p>
-        <h1>{{ 'DASHBOARD.PRESENCES_TODAY' | translate }}</h1>
       </div>
-      <ion-chip color="medium">
+    </section>
+
+    <ion-accordion-group>
+      <ion-accordion value="presence">
+        <ion-item slot="header" color="light">
+          <ion-icon name="today-outline" slot="start"></ion-icon>
+          <ion-label>{{ 'DASHBOARD.PRESENCE_ACCORDION' | translate }}</ion-label>
+          <ion-chip color="medium">
         <ion-icon name="calendar-outline"></ion-icon>
         <ion-label>{{ today }}</ion-label>
       </ion-chip>
-    </section>
+        </ion-item>
+        <div slot="content">
+          <ion-spinner *ngIf="isLoading" class="dashboard-loader" name="crescent"></ion-spinner>
 
-    <ion-spinner *ngIf="isLoading" class="dashboard-loader" name="crescent"></ion-spinner>
+          <ion-text *ngIf="dashboardError" color="danger">
+            <p class="dashboard-error">{{ dashboardError }}</p>
+          </ion-text>
 
-    <ion-text *ngIf="dashboardError" color="danger">
-      <p class="dashboard-error">{{ dashboardError }}</p>
-    </ion-text>
+          <section class="summary-grid" [attr.aria-label]="'DASHBOARD.DAY_SUMMARY' | translate">
+            <article class="summary-card">
+              <div class="summary-icon employee-icon"><ion-icon name="people-outline"></ion-icon></div>
+              <div><span>{{ 'DASHBOARD.EMPLOYEES' | translate }}</span><strong>{{ employeeCount }}</strong><small>{{ 'DASHBOARD.REGISTERED' | translate }}</small></div>
+            </article>
 
-    <section class="summary-grid" [attr.aria-label]="'DASHBOARD.DAY_SUMMARY' | translate">
-      <article class="summary-card">
-        <div class="summary-icon employee-icon"><ion-icon name="people-outline"></ion-icon></div>
-        <div><span>{{ 'DASHBOARD.EMPLOYEES' | translate }}</span><strong>{{ employeeCount }}</strong><small>{{ 'DASHBOARD.REGISTERED' | translate }}</small></div>
-      </article>
+            <article class="summary-card">
+              <div class="summary-icon present-icon"><ion-icon name="time-outline"></ion-icon></div>
+              <div><span>{{ 'DASHBOARD.RECORDED' | translate }}</span><strong>{{ recordedCount }}</strong><small>{{ 'DASHBOARD.TODAY' | translate }}</small></div>
+            </article>
 
-      <article class="summary-card">
-        <div class="summary-icon present-icon"><ion-icon name="time-outline"></ion-icon></div>
-        <div><span>{{ 'DASHBOARD.RECORDED' | translate }}</span><strong>{{ recordedCount }}</strong><small>{{ 'DASHBOARD.TODAY' | translate }}</small></div>
-      </article>
+            <article class="summary-card">
+              <div class="summary-icon absent-icon"><ion-icon name="person-remove-outline"></ion-icon></div>
+              <div><span>{{ 'DASHBOARD.WITHOUT_ATTENDANCE' | translate }}</span><strong>{{ absentCount }}</strong><small>{{ 'DASHBOARD.TODAY' | translate }}</small></div>
+            </article>
 
-      <article class="summary-card">
-        <div class="summary-icon absent-icon"><ion-icon name="person-remove-outline"></ion-icon></div>
-        <div><span>{{ 'DASHBOARD.WITHOUT_ATTENDANCE' | translate }}</span><strong>{{ absentCount }}</strong><small>{{ 'DASHBOARD.TODAY' | translate }}</small></div>
-      </article>
+            <article class="summary-card">
+              <div class="summary-icon entry-icon"><ion-icon name="log-in-outline"></ion-icon></div>
+              <div><span>{{ 'DASHBOARD.AVERAGE_ENTRY' | translate }}</span><strong>{{ averageEntry }}</strong><small>AM / PM</small></div>
+            </article>
 
-      <article class="summary-card">
-        <div class="summary-icon entry-icon"><ion-icon name="log-in-outline"></ion-icon></div>
-        <div><span>{{ 'DASHBOARD.AVERAGE_ENTRY' | translate }}</span><strong>{{ averageEntry }}</strong><small>AM / PM</small></div>
-      </article>
+            <article class="summary-card">
+              <div class="summary-icon exit-icon"><ion-icon name="log-out-outline"></ion-icon></div>
+              <div><span>{{ 'DASHBOARD.AVERAGE_EXIT' | translate }}</span><strong>{{ averageExit }}</strong><small>AM / PM</small></div>
+            </article>
+          </section>
 
-      <article class="summary-card">
-        <div class="summary-icon exit-icon"><ion-icon name="log-out-outline"></ion-icon></div>
-        <div><span>{{ 'DASHBOARD.AVERAGE_EXIT' | translate }}</span><strong>{{ averageExit }}</strong><small>AM / PM</small></div>
-      </article>
-    </section>
+          <section class="attendance-card">
+            <div class="attendance-heading">
+              <div>
+                <p class="eyebrow">{{ 'DASHBOARD.DAY_ACTIVITY' | translate }}</p>
+                <h2>{{ 'DASHBOARD.ATTENDANCE' | translate }}</h2>
+              </div>
+              <span class="record-count">{{ attendanceRows.length }} {{ 'DASHBOARD.RECORDS' | translate }}</span>
+            </div>
 
-    <section class="attendance-card">
-      <div class="attendance-heading">
-        <div>
-          <p class="eyebrow">{{ 'DASHBOARD.DAY_ACTIVITY' | translate }}</p>
-          <h2>{{ 'DASHBOARD.ATTENDANCE' | translate }}</h2>
+            <div class="attendance-table" role="table" [attr.aria-label]="'DASHBOARD.DAILY_ATTENDANCE_LIST' | translate">
+              <div class="attendance-header" role="row">
+                <span>{{ 'DASHBOARD.EMPLOYEE' | translate }}</span>
+                <span>{{ 'DASHBOARD.AM_ENTRY' | translate }}</span>
+                <span>{{ 'DASHBOARD.AM_EXIT' | translate }}</span>
+                <span>{{ 'DASHBOARD.PM_ENTRY' | translate }}</span>
+                <span>{{ 'DASHBOARD.PM_EXIT' | translate }}</span>
+                <span>{{ 'DASHBOARD.STATUS' | translate }}</span>
+              </div>
+
+              <div class="attendance-row" role="row" *ngFor="let row of attendanceRows; trackBy: trackByEmployee">
+                <div class="employee-cell">
+                  <ion-avatar>
+                    <img
+                      [src]="resolvePhotoUrl(row.employee.photo)"
+                      [alt]="row.employee.firstname + ' ' + row.employee.lastname"
+                    />
+                  </ion-avatar>
+                  <div>
+                    <strong>{{ row.employee.firstname }} {{ row.employee.lastname }}</strong>
+                    <small>{{ row.employee.jobTitle || row.employee.jobDepartment || ('DASHBOARD.EMPLOYEE' | translate) }}</small>
+                  </div>
+                </div>
+                <div class="time-cell">
+                  <small>{{ 'DASHBOARD.AM_ENTRY' | translate }}</small>
+                  <strong>{{ row.amEntry || '--:--' }}</strong>
+                </div>
+                <div class="time-cell">
+                  <small>{{ 'DASHBOARD.AM_EXIT' | translate }}</small>
+                  <strong>{{ row.amExit || '--:--' }}</strong>
+                </div>
+                <div class="time-cell">
+                  <small>{{ 'DASHBOARD.PM_ENTRY' | translate }}</small>
+                  <strong>{{ row.pmEntry || '--:--' }}</strong>
+                </div>
+                <div class="time-cell">
+                  <small>{{ 'DASHBOARD.PM_EXIT' | translate }}</small>
+                  <strong>{{ row.pmExit || '--:--' }}</strong>
+                </div>
+                <div>
+                  <ion-badge [color]="row.status === 'present' ? 'success' : 'danger'">
+                    {{ (row.status === 'present' ? 'DASHBOARD.PRESENT' : 'DASHBOARD.ABSENT') | translate }}
+                  </ion-badge>
+                </div>
+              </div>
+
+              <div class="empty-state" *ngIf="!isLoading && attendanceRows.length === 0">
+                <ion-icon name="calendar-clear-outline"></ion-icon>
+                <strong>{{ 'DASHBOARD.NO_ATTENDANCE' | translate }}</strong>
+                <p>{{ 'DASHBOARD.NO_ATTENDANCE_HINT' | translate }}</p>
+              </div>
+            </div>
+          </section>
         </div>
-        <span class="record-count">{{ attendanceRows.length }} {{ 'DASHBOARD.RECORDS' | translate }}</span>
-      </div>
+      </ion-accordion>
 
-      <div class="attendance-table" role="table" [attr.aria-label]="'DASHBOARD.DAILY_ATTENDANCE_LIST' | translate">
-        <div class="attendance-header" role="row">
-          <span>{{ 'DASHBOARD.EMPLOYEE' | translate }}</span>
-          <span>{{ 'DASHBOARD.AM_ENTRY' | translate }}</span>
-          <span>{{ 'DASHBOARD.AM_EXIT' | translate }}</span>
-          <span>{{ 'DASHBOARD.PM_ENTRY' | translate }}</span>
-          <span>{{ 'DASHBOARD.PM_EXIT' | translate }}</span>
-          <span>{{ 'DASHBOARD.STATUS' | translate }}</span>
-        </div>
+      <ion-accordion value="statistics">
+        <ion-item slot="header" color="light">
+          <ion-icon name="analytics-outline" slot="start"></ion-icon>
+          <ion-label>{{ 'DASHBOARD.STATISTICS_ACCORDION' | translate }}</ion-label>
+        </ion-item>
+        <div slot="content" class="statistics-content">
+          <div class="statistics-filters">
+            <ion-item>
+              <ion-label position="stacked">{{ 'DASHBOARD.EMPLOYEE' | translate }}</ion-label>
+              <ion-select interface="alert" [attr.aria-label]="'DASHBOARD.EMPLOYEE' | translate" [(ngModel)]="selectedEmployeeId" (ionChange)="onEmployeeSelectionChange()">
+                <ion-select-option *ngFor="let employee of employees" [value]="employee.id.toString()">
+                  {{ employee.firstname }} {{ employee.lastname }}
+                </ion-select-option>
+              </ion-select>
+            </ion-item>
+            <ion-item>
+              <ion-label position="stacked">{{ 'DASHBOARD.START_DATE' | translate }}</ion-label>
+              <ion-input type="date" [(ngModel)]="chartStartDate" (ionChange)="onDateRangeChange()"></ion-input>
+            </ion-item>
+            <ion-item>
+              <ion-label position="stacked">{{ 'DASHBOARD.END_DATE' | translate }}</ion-label>
+              <ion-input type="date" [(ngModel)]="chartEndDate" (ionChange)="onDateRangeChange()"></ion-input>
+            </ion-item>
+          </div>
 
-        <div class="attendance-row" role="row" *ngFor="let row of attendanceRows; trackBy: trackByEmployee">
-          <div class="employee-cell">
-            <ion-avatar>
-              <img
-                [src]="resolvePhotoUrl(row.employee.photo)"
-                [alt]="row.employee.firstname + ' ' + row.employee.lastname"
-              />
-            </ion-avatar>
-            <div>
-              <strong>{{ row.employee.firstname }} {{ row.employee.lastname }}</strong>
-              <small>{{ row.employee.jobTitle || row.employee.jobDepartment || ('DASHBOARD.EMPLOYEE' | translate) }}</small>
+          <div class="summary-grid kpi-grid kpi-grid-compact">
+            <article class="summary-card kpi-summary-card">
+              <div class="summary-icon entry-icon"><ion-icon name="sunny-outline"></ion-icon></div>
+              <div class="kpi-card-content">
+                <strong class="kpi-period-title">AM</strong>
+                <div class="kpi-sections">
+                  <div class="kpi-section">
+                    <span>{{ 'DASHBOARD.ENTRY_DELAY' | translate }}</span>
+                    <div class="kpi-values">
+                      <div><small>{{ 'DASHBOARD.AVERAGE' | translate }}</small><strong>{{ averageAmEntryDelay }}</strong></div>
+                      <div><small>{{ 'DASHBOARD.MAXIMUM' | translate }}</small><strong>{{ maxAmEntryDelay }}</strong></div>
+                      <div><small>{{ 'DASHBOARD.TOTAL' | translate }}</small><strong>{{ totalAmEntryDelay }}</strong></div>
+                    </div>
+                  </div>
+                  <div class="kpi-section">
+                    <span>{{ 'DASHBOARD.EARLY_EXIT' | translate }}</span>
+                    <div class="kpi-values">
+                      <div><small>{{ 'DASHBOARD.AVERAGE' | translate }}</small><strong>{{ averageAmEarlyExit }}</strong></div>
+                      <div><small>{{ 'DASHBOARD.MAXIMUM' | translate }}</small><strong>{{ maxAmEarlyExit }}</strong></div>
+                      <div><small>{{ 'DASHBOARD.TOTAL' | translate }}</small><strong>{{ totalAmEarlyExit }}</strong></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </article>
+
+            <article class="summary-card kpi-summary-card">
+              <div class="summary-icon exit-icon"><ion-icon name="partly-sunny-outline"></ion-icon></div>
+              <div class="kpi-card-content">
+                <strong class="kpi-period-title">PM</strong>
+                <div class="kpi-sections">
+                  <div class="kpi-section">
+                    <span>{{ 'DASHBOARD.ENTRY_DELAY' | translate }}</span>
+                    <div class="kpi-values">
+                      <div><small>{{ 'DASHBOARD.AVERAGE' | translate }}</small><strong>{{ averagePmEntryDelay }}</strong></div>
+                      <div><small>{{ 'DASHBOARD.MAXIMUM' | translate }}</small><strong>{{ maxPmEntryDelay }}</strong></div>
+                      <div><small>{{ 'DASHBOARD.TOTAL' | translate }}</small><strong>{{ totalPmEntryDelay }}</strong></div>
+                    </div>
+                  </div>
+                  <div class="kpi-section">
+                    <span>{{ 'DASHBOARD.EARLY_EXIT' | translate }}</span>
+                    <div class="kpi-values">
+                      <div><small>{{ 'DASHBOARD.AVERAGE' | translate }}</small><strong>{{ averagePmEarlyExit }}</strong></div>
+                      <div><small>{{ 'DASHBOARD.MAXIMUM' | translate }}</small><strong>{{ maxPmEarlyExit }}</strong></div>
+                      <div><small>{{ 'DASHBOARD.TOTAL' | translate }}</small><strong>{{ totalPmEarlyExit }}</strong></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </article>
+          </div>
+
+          <div class="chart-card">
+            <h2>{{ 'DASHBOARD.ATTENDANCE_EVOLUTION' | translate }}</h2>
+            <div class="chart-legend">
+              <span><i class="legend-am-entry"></i>{{ 'DASHBOARD.AM_ENTRY' | translate }}</span>
+              <span><i class="legend-am-exit"></i>{{ 'DASHBOARD.AM_EXIT' | translate }}</span>
+              <span><i class="legend-pm-entry"></i>{{ 'DASHBOARD.PM_ENTRY' | translate }}</span>
+              <span><i class="legend-pm-exit"></i>{{ 'DASHBOARD.PM_EXIT' | translate }}</span>
+            </div>
+
+            <div class="attendance-chart" *ngIf="chartPoints.length">
+              <svg viewBox="0 0 760 250" role="img" [attr.aria-label]="'DASHBOARD.ATTENDANCE_EVOLUTION' | translate">
+                <line x1="55" y1="230" x2="740" y2="230" class="chart-axis"></line>
+                <line x1="55" y1="20" x2="55" y2="230" class="chart-axis"></line>
+
+                <ng-container *ngFor="let hour of [6, 8, 10, 12, 14, 16, 18]">
+                  <line x1="55" [attr.y1]="chartTargetY(hour * 60)" x2="740" [attr.y2]="chartTargetY(hour * 60)" class="chart-grid"></line>
+                  <text x="48" [attr.y]="chartTargetY(hour * 60) + 4" text-anchor="end" class="chart-label">{{ hour }}h</text>
+                </ng-container>
+
+                <ng-container *ngFor="let point of chartPoints; let i = index">
+                  <line *ngIf="point.hasLog"
+                    [attr.x1]="chartPointX(i)" y1="20"
+                    [attr.x2]="chartPointX(i)" y2="230"
+                    class="chart-log-line"></line>
+                </ng-container>
+
+                <ng-container *ngFor="let point of chartPoints; let i = index">
+                  <text *ngIf="i === 0 || i === chartPoints.length - 1 || i % 7 === 0"
+                    [attr.x]="chartPointX(i)"
+                    y="244" text-anchor="middle" class="chart-label">
+                    {{ point.label }}
+                  </text>
+                </ng-container>
+
+                <line *ngFor="let target of attendanceTargets"
+                  x1="55" [attr.y1]="chartTargetY(target.value)"
+                  x2="740" [attr.y2]="chartTargetY(target.value)"
+                  class="chart-target-line"></line>
+
+                <ng-container *ngFor="let series of chartSeries">
+                  <polyline *ngFor="let segment of series.segments"
+                    [attr.points]="segment" [attr.stroke]="series.color"
+                    fill="none" stroke-width="3"></polyline>
+                </ng-container>
+
+                <text *ngFor="let target of attendanceTargets"
+                  x="742" [attr.y]="chartTargetY(target.value) - 3"
+                  class="chart-target-label">{{ target.label }}</text>
+              </svg>
+            </div>
+            <div class="empty-state" *ngIf="chartPoints.length === 0">
+              <strong>{{ 'DASHBOARD.NO_STATISTICS' | translate }}</strong>
             </div>
           </div>
-          <div class="time-cell">
-            <small>{{ 'DASHBOARD.AM_ENTRY' | translate }}</small>
-            <strong>{{ row.amEntry || '--:--' }}</strong>
-          </div>
-          <div class="time-cell">
-            <small>{{ 'DASHBOARD.AM_EXIT' | translate }}</small>
-            <strong>{{ row.amExit || '--:--' }}</strong>
-          </div>
-          <div class="time-cell">
-            <small>{{ 'DASHBOARD.PM_ENTRY' | translate }}</small>
-            <strong>{{ row.pmEntry || '--:--' }}</strong>
-          </div>
-          <div class="time-cell">
-            <small>{{ 'DASHBOARD.PM_EXIT' | translate }}</small>
-            <strong>{{ row.pmExit || '--:--' }}</strong>
-          </div>
-          <div>
-            <ion-badge [color]="row.exit ? 'success' : 'warning'">
-              {{ (row.exit ? 'DASHBOARD.COMPLETED' : 'DASHBOARD.PRESENT') | translate }}
-            </ion-badge>
-          </div>
         </div>
-
-        <div class="empty-state" *ngIf="!isLoading && attendanceRows.length === 0">
-          <ion-icon name="calendar-clear-outline"></ion-icon>
-          <strong>{{ 'DASHBOARD.NO_ATTENDANCE' | translate }}</strong>
-          <p>{{ 'DASHBOARD.NO_ATTENDANCE_HINT' | translate }}</p>
-        </div>
-      </div>
-    </section>
+      </ion-accordion>
+    </ion-accordion-group>
   </main>
 </ion-content>

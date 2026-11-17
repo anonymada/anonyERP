@@ -14,8 +14,6 @@ services:
 
   webdav:
     image: ugeek/webdav:amd64
-    ports:
-      - 8080:80
     volumes:
       - webdav-data:/media
     environment:
@@ -27,21 +25,22 @@ services:
 
   fileupload:
     image: 192.168.2.254:5000/fileupload:1.1.1
-    ports: 
-      - 8003:8003
     environment:
       - WEBDAV_USER=${WEBDAV_USER}
       - WEBDAV_PASS=${WEBDAV_PASS}
       - WEBDAV_HOST=http://webdav
       - PUBLIC_UPLOAD_URL=${FRONTEND_PUBLIC_URL:-https://192.168.2.254:8001}
       - PORT=8003
+      - TLS_CERT_FILE=/run/secrets/frontend_tls_cert
+      - TLS_KEY_FILE=/run/secrets/frontend_tls_key
     volumes:
       - webdav-data:/fileupload/data
+    secrets:
+      - frontend_tls_cert
+      - frontend_tls_key
           
   backend:
     image: 192.168.2.254:5000/backend:latest
-    ports:
-      - 8002:8002
     environment:
       - DB_DIALECT=postgres
       - DB_HOST=postgres
@@ -60,9 +59,10 @@ services:
         protocol: tcp
         mode: ingress
     environment:
-      BACKEND_URL: ${FRONTEND_PUBLIC_URL:-https://192.168.2.254:8001}
-      UPLOAD_URL: ${FRONTEND_PUBLIC_URL:-https://192.168.2.254:8001}
-      DOWNLOAD_URL: ${FRONTEND_PUBLIC_URL:-https://192.168.2.254:8001}/image
+      BACKEND_URL: https://192.168.2.254:8001/api/
+      UPLOAD_URL: https://192.168.2.254:8001/upload-file/
+      DOWNLOAD_URL: https://192.168.2.254:8001/image/
+      WEBDAV_URL: https://192.168.2.254:8001/webdav/
     secrets:
       - frontend_tls_cert
       - frontend_tls_key

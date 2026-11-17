@@ -24,4 +24,12 @@ export class AlertService {
   }
 
   showInfoAlert() {}
+
+  showSuccessAlert(message: string) {
+    this.alertController.create({
+      header: this.translate.instant('GLOBAL.SAVED'),
+      message,
+      buttons: ['OK'],
+    }).then((alert) => alert.present());
+  }
 }

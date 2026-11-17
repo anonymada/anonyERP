@@ -6,6 +6,9 @@ import { ModalComponent } from 'src/app/components/modal/modal.component';
 import { AlertService } from 'src/app/services/alert/alert.service';
 import { LoaderService } from 'src/app/services/loader/loader.service';
 import { UserService } from 'src/app/services/user/user-service';
+import { EmployeesService } from 'src/app/services/employee/employees.service';
+import { EmployeelogService } from 'src/app/services/employee/employeelog.service';
+import { Employee } from 'src/app/services/employee/employees';
 
 @Component({
   selector: 'app-admin',
@@ -59,6 +62,16 @@ export class AdminPage implements OnInit {
       multiple: true,
     },
   ];
+  employees: Employee[] = [];
+  selectedEmployeeId = '';
+  attendanceDate = '';
+  attendanceLog: any = null;
+  hourAmIn = '';
+  hourAmOut = '';
+  hourPmIn = '';
+  hourPmOut = '';
+  attendanceLoading = false;
+  activeTab = 'users';
 
   constructor(
     private userService: UserService,
@@ -66,12 +79,19 @@ export class AdminPage implements OnInit {
     private alertController: AlertController,
     private loader: LoaderService,
     private alert: AlertService,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private employeesService: EmployeesService,
+    private employeelogService: EmployeelogService
   ) {
     this.list();
   }
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.attendanceDate = new Date().toISOString().substring(0, 10);
+    this.employeesService.listEmployee().subscribe((employees) => {
+      this.employees = employees || [];
+    });
+  }
 
   async list() {
     this.loader.showHideAutoLoader(3000);
@@ -85,13 +105,14 @@ export class AdminPage implements OnInit {
     );
   }
 
-  async delete(i: string | number) {
+  async delete(user: any) {
+    if (!user) { return; }
     const confirmAlert = await this.alertController.create({
       header: this.translate.instant('GLOBAL.CONFIRM'),
       message:
         this.translate.instant('GLOBAL.DELETECONFIRM') +
         '<br/>' +
-        this.users[i].username,
+        user.username,
       buttons: [
         {
           text: 'Non',
@@ -100,7 +121,7 @@ export class AdminPage implements OnInit {
         {
           text: 'Oui',
           handler: () => {
-            this.userService.delete(this.users[i].id).subscribe(
+            this.userService.delete(user.id).subscribe(
               async (data) => {
                 this.list();
               },
@@ -116,9 +137,10 @@ export class AdminPage implements OnInit {
     await confirmAlert.present();
   }
 
-  async edit(i: string | number) {
+  async edit(user: any) {
+    if (!user) { return; }
     this.loader.showHideAutoLoader(500);
-    this.userService.view(this.users[i].id).subscribe(async (data) => {
+    this.userService.view(user.id).subscribe(async (data) => {
       this.userData = data;
       const modal = this.modalCtrl.create({
         component: ModalComponent,
@@ -150,10 +172,66 @@ export class AdminPage implements OnInit {
     });
   }
 
-  refresh(event) {
+  refresh(event: any) {
     setTimeout(async () => {
       this.list();
       event.target.complete();
     }, 500);
+  }
+
+  loadAttendanceLog() {
+    if (!this.selectedEmployeeId || !this.attendanceDate) {
+      this.attendanceLog = null;
+      this.resetAttendanceHours();
+      return;
+    }
+
+    this.attendanceLoading = true;
+    this.employeelogService.view({
+      employeeId: this.selectedEmployeeId,
+      dateOfLog: this.attendanceDate,
+    }).subscribe((logs) => {
+      this.attendanceLoading = false;
+      this.attendanceLog = logs && logs.length ? logs[0] : null;
+      this.hourAmIn = this.attendanceLog?.hourAmIn || '';
+      this.hourAmOut = this.attendanceLog?.hourAmOut || '';
+      this.hourPmIn = this.attendanceLog?.hourPmIn || '';
+      this.hourPmOut = this.attendanceLog?.hourPmOut || '';
+    }, (error) => {
+      this.attendanceLoading = false;
+      this.alert.showErrorAlert(error);
+      this.resetAttendanceHours();
+    });
+  }
+
+  saveAttendanceLog() {
+    const data = {
+      employeeId: this.selectedEmployeeId,
+      dateOfLog: this.attendanceDate,
+      hourAmIn: this.normalizeTime(this.hourAmIn),
+      hourAmOut: this.normalizeTime(this.hourAmOut),
+      hourPmIn: this.normalizeTime(this.hourPmIn),
+      hourPmOut: this.normalizeTime(this.hourPmOut),
+    };
+
+    const request = this.attendanceLog
+      ? this.employeelogService.update(data)
+      : this.employeelogService.add(data);
+
+    request.subscribe(() => {
+      this.loadAttendanceLog();
+      this.alert.showSuccessAlert(this.translate.instant('ADMIN.LOG_SAVED'));
+    }, (error) => this.alert.showErrorAlert(error));
+  }
+
+  private normalizeTime(time: string): string | null {
+    return time ? time : null;
+  }
+
+  private resetAttendanceHours() {
+    this.hourAmIn = '';
+    this.hourAmOut = '';
+    this.hourPmIn = '';
+    this.hourPmOut = '';
   }
 }

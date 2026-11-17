@@ -1,1 +1,24 @@
+.attendance-admin {
+  padding: 16px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.attendance-admin ion-card {
+  border-radius: 16px;
+}
+
+.attendance-hours {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.attendance-admin ion-button {
+  margin-top: 18px;
+}
+
+@media (max-width: 700px) {
+  .attendance-hours { grid-template-columns: 1fr; }
+}
 
